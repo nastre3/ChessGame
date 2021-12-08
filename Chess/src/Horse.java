@@ -11,19 +11,37 @@ public class Horse extends ChessPiece {
 
     @Override
     public boolean canMoveToPosition(ChessBoard chessBoard, int line, int column, int toLine, int toColumn) {
-        // конь не мог выйти за доску (доска в нашем случае — это двумерный массив размером 8 на 8,
-        // напоминаем, что индексы начинаются с 0) и мог ходить только буквой «Г».
-        // Также фигура не может сходить в точку, в которой она сейчас находится.
-        // Если конь может пройти от точки (line, column) до точки (toLine, toColumn)
-        // по всем правилам (указанным выше), то функция вернет true, иначе — false.
-        if ((line  == 0 || column == 0 || line == 8 || column == 8)
-                && (toLine-line==1 && toColumn-column==2) || (toLine-line==2 && toColumn-column==1)) {
-            return true;
+        if (checkPos(line) && checkPos(column) && checkPos(toLine) && checkPos(toColumn)) {
+            if (line != toLine && column != toColumn && (chessBoard.board[toLine][toColumn] == null || // check that horse
+                    !chessBoard.board[toLine][toColumn].color.equals(this.color)) &&                   // can't move out
+                    chessBoard.board[line][column] != null) {                                          // position is empty
+                if (!chessBoard.board[line][column].equals(this)) {
+                    return false;
+                }
+
+                // all positions for horse
+                int[][] positions = new int[][]{
+                        {line - 2, column - 1}, {line - 2, column + 1},
+                        {line + 2, column - 1}, {line + 2, column + 1},
+                        {line - 1, column - 2}, {line - 1, column + 2},
+                        {line + 1, column - 2}, {line + 1, column + 2}};
+
+                for (int i = 0; i < positions.length; i++) {
+                    if (positions[i][0] == toLine && positions[i][1] == toColumn)
+                        return true;  // check that toLine and toColumn
+                }                                                                               // in positions
+            }
         } else return false;
+        return false;
     }
 
     @Override
     public String getSymbol() {
         return "H";
+    }
+
+    public boolean checkPos(int pos) {   // check that our position is correct
+        if (pos >= 0 && pos <= 7) return true;
+        else return false;
     }
 }
